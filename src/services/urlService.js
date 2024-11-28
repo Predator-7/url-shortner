@@ -47,7 +47,6 @@ class URLService {
       const shortCode = URLUtils.generateShortCode();
       const expiresAt = URLUtils.calculateExpirationTTL(options.ttl);
 
-      // Save the new URL entry in the repository
       const urlEntry = await URLRepository.create(shortCode, longUrl, { expiresAt });
 
       return { shortUrl: this.generateShortUrl(urlEntry.shortCode) };

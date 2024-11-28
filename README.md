@@ -17,7 +17,7 @@ This is a lightweight URL shortening service I built to learn more about Node.js
 
 ### Installation
 ```bash
-git clone https://github.com/Predator-7/url-shortner
+git clone https://github.com/Predator-7/url-shortener
 cd url-shortener
 npm install
 ```
