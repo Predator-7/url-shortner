@@ -1,33 +1,34 @@
 import URLService from '../services/urlService.js';
 
 class URLController {
-  async shorten(req, res) {
+  async shorten(req, res, next) {
     try {
       const { url, ttl } = req.body;
-      const { shortUrl } = await URLService.shortenURL(url, { ttl });
-      res.status(201).json({ shortUrl });
+      const clientIp = req.ip;
+      const response = await URLService.shortenURL(url, { ttl }, clientIp);
+      res.status(201).json(response);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async getStats(req, res) {
+  async getStats(req, res, next) {
     try {
       const { shortCode } = req.params;
       const stats = await URLService.getURLStats(shortCode);
       res.json(stats);
     } catch (error) {
-      res.status(404).json({ error: error.message });
+      next(error);
     }
   }
 
-  async redirect(req, res) {
+  async redirect(req, res, next) {
     try {
       const { shortCode } = req.params;
       const longUrl = await URLService.getRedirectURL(shortCode);
       res.redirect(longUrl);
     } catch (error) {
-      res.status(404).json({ error: error.message });
+      next(error);
     }
   }
 }

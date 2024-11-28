@@ -1,53 +1,43 @@
 import URLModel from '../models/urlModel.js';
 
 class URLRepository {
-  // Find URL entry by shortCode
-  findByShortCode(shortCode) {
-    return URLModel.getDatabase().get(shortCode);
+  async findByShortCode(shortCode) {
+    return URLModel.get(shortCode);
   }
 
-  // Create a new URL entry in the database
-  create(shortCode, longUrl, options = {}) {
+  async create(shortCode, longUrl, options) {
     const entry = {
       longUrl,
       shortCode,
       createdAt: new Date(),
       accessCount: 0,
       expiresAt: options.expiresAt || null,
-      ...options,
     };
-
-    URLModel.getDatabase().set(shortCode, entry);
+    await URLModel.set(shortCode, entry);
     return entry;
   }
 
-  // Increment the access count of a URL entry
-  incrementAccessCount(shortCode) {
-    const urlEntry = this.findByShortCode(shortCode);
+  async incrementAccessCount(shortCode) {
+    const urlEntry = await this.findByShortCode(shortCode);
     if (urlEntry) {
       urlEntry.accessCount += 1;
+      await URLModel.set(shortCode, urlEntry);
     }
-    return urlEntry;
   }
 
-  // Cleanup expired URLs
-  cleanupExpiredUrls() {
+  async cleanupExpiredUrls() {
     const now = new Date();
-    for (const [shortCode, entry] of URLModel.getDatabase().entries()) {
-      if (entry.expiresAt && entry.expiresAt < now) {
-        URLModel.getDatabase().delete(shortCode);
-      }
+    const expiredEntries = await URLModel.findEntries(
+      (entry) => entry.expiresAt && new Date(entry.expiresAt) < now
+    );
+    for (const { key } of expiredEntries) {
+      await URLModel.delete(key);
     }
   }
 
-  // Find an existing URL entry by its long URL
-  findExistingURL(longUrl) {
-    for (const [, entry] of URLModel.getDatabase().entries()) {
-      if (entry.longUrl === longUrl) {
-        return entry;
-      }
-    }
-    return null;
+  async findExistingURL(longUrl) {
+    const entries = await URLModel.findEntries((entry) => entry.longUrl === longUrl);
+    return entries.length > 0 ? entries[0].entry : null;
   }
 }
 
