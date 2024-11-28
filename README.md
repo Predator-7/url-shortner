@@ -1,7 +1,5 @@
 # URL Shortener
 
-## What is this?
-
 This is a lightweight URL shortening service I built to learn more about Node.js, Redis, and backend development. It allows you to take long, unwieldy URLs and transform them into short, manageable links that are easier to share.
 
 ## Key Features
