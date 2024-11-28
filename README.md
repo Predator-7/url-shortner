@@ -39,7 +39,7 @@ npm start
 ```
 
 ### Check URL Stats
-`GET /:shortCode/stats`
+`GET /stats/:shortCode`
 
 ### Redirect
 `GET /:shortCode`
